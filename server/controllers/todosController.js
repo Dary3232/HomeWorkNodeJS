@@ -13,7 +13,7 @@ class TodosController {
 
     async addTodo (req, res) {
         try {
-            if (!req.body.title) {
+            if (!req.body || !req.body.title) {
                 return res.status(400).json({ message: 'Пожалуйста, добавьте заголовок' })
             }
 

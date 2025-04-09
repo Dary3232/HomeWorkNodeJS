@@ -1,40 +1,32 @@
-import { useState } from "react"
+import { useState } from "react";
+import { useFetch } from "../../hooks/useFetch";
 
 export const AddTodoItem = ({ updateTodoList }) => {
-
-    const [title, setTitle] = useState('')
+    const [title, setTitle] = useState('');
+    const { fetchData } = useFetch();
 
     const onSubmit = async (e) => {
-        e.preventDefault()
-
-        try {
-            const res = await fetch('http://localhost:3002/api/todos/add', {
-                method: 'post',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    title
-                })
-            })
-            if (res.status !== 200) {
-                const json = await res.json()
-                alert(json.message)
-                return
-            }
-            updateTodoList()
-        } catch (e) {
-            console.log(e)
+        e.preventDefault();
+        const body = { title };
+        const res = await fetchData('http://localhost:3002/api/todos/add', 'POST', body);
+        if (res) {
+            updateTodoList();
         }
-    }
+    };
 
     return (
-        <form onSubmit={onSubmit}>
-            <input type="text" placeholder="title" value={title} onChange={(e) => setTitle(e.target.value)} />
-            <br />
-            <br />
-            <button>Добавить</button>
+        <form onSubmit={onSubmit} className="todo-form">
+            <input 
+                type="text" 
+                placeholder="title" 
+                value={title} 
+                onChange={(e) => setTitle(e.target.value)} 
+                className="input"
+                required
+            />
+            <div className="button-group">
+                <button type="submit" className="add-button">Добавить</button>
+            </div>
         </form>
-    )
-}
+    );
+};

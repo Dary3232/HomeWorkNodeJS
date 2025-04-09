@@ -1,37 +1,39 @@
+import { useFetch } from "../../hooks/useFetch";
+import { EditTodoItem } from "../EditTodoItem";
+
 export const TodoList = ({ todoList, updateTodoList }) => {
+    const { fetchData } = useFetch();
 
     const deleteTodoItem = async (title) => {
-        try {
-            const res = await fetch('http://localhost:3002/api/todos/delete', {
-                method: 'delete',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    title
-                })
-            })
-            if (res.status !== 200) {
-                const json = await res.json()
-                alert(json.message)
-                return
-            }
-            updateTodoList()
-        } catch (e) {
-            console.log(e)
+        const body = { title };
+        const res = await fetchData('http://localhost:3002/api/todos/delete', 'DELETE', body);
+        if (res) {
+            updateTodoList();
         }
-    }
+    };
 
-    return <>
-        {
-            !todoList.length && <>Loading... </>
-        }
-        {
-            todoList.map((item) => <div key={item._id}>
-                {item.title} &nbsp;
-                <span onClick = {() => deleteTodoItem(item.title)}>Удалить</span>
-            </div>)
-        }
-    </>
-}
+    return (
+        <>
+            {!todoList.length ? (
+                <div>Loading...</div>
+            ) : (
+                todoList.map((item) => (
+                    <div key={item._id} className="todo-item">
+                        <EditTodoItem
+                            todo={item} 
+                            updateTodoList={updateTodoList} 
+                        />
+                        <button 
+                            className="edit-button" 
+                            onClick={() => deleteTodoItem(item.title)}
+                        >
+                            Удалить
+                        </button>
+                    </div>
+                ))
+            )}
+        </>
+    );
+};
+
+
